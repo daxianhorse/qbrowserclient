@@ -13,7 +13,7 @@
 #include "include/wrapper/cef_closure_task.h"
 #include "include/wrapper/cef_helpers.h"
 
-#include "ClientHandler.h"
+#include "clienthandler.h"
 namespace {
 
 // Custom menu command Ids.
@@ -56,7 +56,7 @@ bool ClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
   CEF_REQUIRE_UI_THREAD();
 
   if (delegate_) {
-    delegate_->OnBeforeBrowserCreate(windowInfo);
+    delegate_->OnBeforeBrowserPopup(windowInfo);
   }
   return false;
 }

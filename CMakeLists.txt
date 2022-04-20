@@ -14,19 +14,23 @@ find_package(Qt6 COMPONENTS
         Core
         Gui
         Widgets
+        Quick
         REQUIRED
         )
 
-LINK_DIRECTORIES(${CMAKE_BINARY_DIR})
+link_directories(${CMAKE_BINARY_DIR})
+
+message(STATUS ${CMAKE_BINARY_DIR})
 
 include_directories(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR})
 
-add_executable(qbrowserclient main.cpp ClientHandler.cc ClientHandler.h)
+add_executable(qbrowserclient main.cpp clienthandler.cc clienthandler.h qbrowserwindow.cc qbrowserwindow.h)
 
 target_link_libraries(qbrowserclient PUBLIC
         Qt::Core
         Qt::Gui
         Qt::Widgets
+        Qt::Quick
         libcef_dll_wrapper.a
         libcef.so
         X11

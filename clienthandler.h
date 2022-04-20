@@ -22,6 +22,8 @@ class ClientHandler :
 
     virtual void OnBeforeBrowserCreate(CefWindowInfo &windowInfo) = 0;
 
+    virtual void OnBeforeBrowserPopup(CefWindowInfo &windowInfo) = 0;
+
     virtual void OnSetTitle(CefRefPtr<CefBrowser> browser, const CefString &title) = 0;
 
 //    // Called when the browser is closing.
@@ -111,6 +113,7 @@ class ClientHandler :
                            const CefString &errorText,
                            const CefString &failedUrl) override;
 
+  // CefDisplayHandler methods:
   void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString &title) override;
 
   // CefKeyboardHandler:
