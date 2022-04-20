@@ -84,8 +84,6 @@ void ClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
                                         CefRefPtr<CefMenuModel> model) {
   CEF_REQUIRE_UI_THREAD();
 
-//  using namespace std;
-//  cout << 123 << endl;
   if ((params->GetTypeFlags() & (CM_TYPEFLAG_PAGE | CM_TYPEFLAG_FRAME)) != 0) {
     // Add a separator if the menu already has items.
     if (model->GetCount() > 0)

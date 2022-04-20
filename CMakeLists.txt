@@ -24,7 +24,7 @@ message(STATUS ${CMAKE_BINARY_DIR})
 
 include_directories(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR})
 
-add_executable(qbrowserclient main.cpp clienthandler.cc clienthandler.h qbrowserwindow.cc qbrowserwindow.h)
+add_executable(qbrowserclient main.cpp clienthandler.cc clienthandler.h qbrowserwindow.cc qbrowserwindow.h qbrowserclient.cc qbrowserclient.h)
 
 target_link_libraries(qbrowserclient PUBLIC
         Qt::Core
