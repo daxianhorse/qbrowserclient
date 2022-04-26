@@ -56,12 +56,14 @@ bool ClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
   CEF_REQUIRE_UI_THREAD();
 
   if (delegate_) {
-    delegate_->OnBeforeBrowserPopup(windowInfo);
+    delegate_->OnBeforeBrowserCreate(windowInfo);
   }
   return false;
 }
 void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
   CEF_REQUIRE_UI_THREAD();
+
+  std::cout << 3423 << std::endl;
 
   if (delegate_)
     delegate_->OnBrowserCreated(browser);
@@ -157,7 +159,7 @@ void ClientHandler::OnShowDevTools(CefRefPtr<CefBrowser> browser, const CefPoint
   CefRefPtr<CefClient> client = host->GetClient();
   CefBrowserSettings browser_settings;
 
-  delegate_->OnBeforeBrowserCreate(window_info);
+  if (!host->HasDevTools())  delegate_->OnBeforeBrowserCreate(window_info);
 
   host->ShowDevTools(window_info, client, browser_settings, inspect_element_at);
 }

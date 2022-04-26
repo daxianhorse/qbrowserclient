@@ -22,7 +22,7 @@ class ClientHandler :
 
     virtual void OnBeforeBrowserCreate(CefWindowInfo &windowInfo) = 0;
 
-    virtual void OnBeforeBrowserPopup(CefWindowInfo &windowInfo) = 0;
+//    virtual void OnBeforeBrowserPopup(CefWindowInfo &windowInfo) = 0;
 
     virtual void OnSetTitle(CefRefPtr<CefBrowser> browser, const CefString &title) = 0;
 
