@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "qbrowserwindow.h"
+#include "qbrowserclient.h"
 
 #ifdef __linux__
 #include <X11/Xlib.h>
@@ -45,8 +46,9 @@ void QBrowserWindow::setLoadingState(bool isLoading, bool canGoBack, bool canGoF
 void QBrowserWindow::setClosingState(bool isClosing) {
   this->is_closing_ = isClosing;
 }
-void QBrowserWindow::attachBrowser(const CefString &url) {
-
+QBrowserWindow::QBrowserWindow(const CefString &url) {
+  qDebug() << "attach" << this;
+  QBrowserClient::GetInstance()->CreateBrowserByWindow(this, url);
 }
 
 

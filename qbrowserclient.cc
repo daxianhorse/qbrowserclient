@@ -6,16 +6,14 @@
 #include "qbrowserwindow.h"
 #include "cef_app.h"
 
-#include <iostream>
-
 #include <mutex>
+namespace {
+std::mutex window_lock;
+QBrowserWindow *curr_window;
+} // namespace
 
-QBrowserClient::QBrowserClient(const std::string &url) {
+QBrowserClient::QBrowserClient() {
   handler_ = new ClientHandler(this);
-
-  auto *target_window = new QBrowserWindow;
-
-  CreateBrowserByWindow(target_window, "bilibili.com");
 }
 
 void QBrowserClient::OnBrowserCreated(CefRefPtr<CefBrowser> browser) {
@@ -51,10 +49,17 @@ void QBrowserClient::OnBrowserClosed(CefRefPtr<CefBrowser> browser) {
 void QBrowserClient::OnSetAddress(CefRefPtr<CefBrowser> browser, const CefString &url) {
   browser_list_[browser->GetIdentifier()]->setBrowserUrl(QString::fromStdString(url.ToString()));
 }
-void QBrowserClient::OnSetLoadingState(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack, bool canGoForward) {
+
+void QBrowserClient::OnSetLoadingState(CefRefPtr<CefBrowser> browser,
+                                       bool isLoading,
+                                       bool canGoBack,
+                                       bool canGoForward) {
   browser_list_[browser->GetIdentifier()]->setLoadingState(isLoading, canGoBack, canGoForward);
 }
+
 void QBrowserClient::CreateBrowserByWindow(QBrowserWindow *target_window, const CefString &url) {
+//  if (target_window==Q_NULLPTR)
+
   window_lock.lock();
   CefWindowInfo window_info;
   window_info.SetAsChild(target_window->winId(), {0, 0, 0, 0});
@@ -68,4 +73,12 @@ void QBrowserClient::CreateBrowserByWindow(QBrowserWindow *target_window, const 
                                 browser_settings,
                                 nullptr,
                                 nullptr);
+}
+
+QBrowserClient *QBrowserClient::GetInstance() {
+  static QBrowserClient instance;
+  return &instance;
+}
+void QBrowserClient::OnCreateBrowserByUrl(const CefString &url) {
+  QBrowserWindow *new_window = new QBrowserWindow(url);
 }

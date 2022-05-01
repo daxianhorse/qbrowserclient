@@ -10,7 +10,7 @@
 
 class QBrowserClient : public ClientHandler::Delegate {
  public:
-  explicit QBrowserClient(const std::string &url);
+  explicit QBrowserClient();
 
 //  impl the SimpleHandler::Delegate
   void OnBrowserCreated(CefRefPtr<CefBrowser> browser) override;
@@ -23,17 +23,21 @@ class QBrowserClient : public ClientHandler::Delegate {
 
   void OnSetTitle(CefRefPtr<CefBrowser> browser, const CefString &title) override;
 
+  void OnCreateBrowserByUrl(const CefString &url) override;
+
   void OnSetLoadingState(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack, bool canGoForward) override;
 
   void CreateBrowserByWindow(QBrowserWindow *target_window, const CefString &url);
 
+  static QBrowserClient* GetInstance();
+
+  QBrowserClient(const QBrowserClient &) = delete;
+  const QBrowserClient &operator=(const QBrowserClient &) = delete;
+
  private:
   ClientHandler *handler_;
 
-  std::map<int, QBrowserWindow *> browser_list_;
-
-  std::mutex window_lock;
-  QBrowserWindow *curr_window;
+  std::unordered_map<int, QBrowserWindow *> browser_list_;
 };
 
 #endif //QBROWSERCLIENT__QBROWSERCLIENT_H_

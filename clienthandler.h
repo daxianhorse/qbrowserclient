@@ -10,8 +10,10 @@
 class ClientHandler :
     public CefClient,
     public CefDisplayHandler,
+    public CefDownloadHandler,
     public CefKeyboardHandler,
     public CefContextMenuHandler,
+    public CefRequestHandler,
     public CefLifeSpanHandler,
     public CefLoadHandler {
  public:
@@ -34,6 +36,8 @@ class ClientHandler :
 //    // Called when the browser has been closed.
     virtual void OnBrowserClosed(CefRefPtr<CefBrowser> browser) = 0;
 
+    virtual void OnCreateBrowserByUrl(const CefString &url) = 0;
+
 //    // Set the window URL address.
 //    virtual void OnSetAddress(const std::string& url) = 0;
 //
@@ -47,7 +51,10 @@ class ClientHandler :
 //    virtual void OnAutoResize(const CefSize& new_size) = 0;
 //
     // Set the loading state.
-    virtual void OnSetLoadingState(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack, bool canGoForward) = 0;
+    virtual void OnSetLoadingState(CefRefPtr<CefBrowser> browser,
+                                   bool isLoading,
+                                   bool canGoBack,
+                                   bool canGoForward) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -58,6 +65,10 @@ class ClientHandler :
   }
 
   // CefClient methods:
+  CefRefPtr<CefDownloadHandler> GetDownloadHandler() override {
+    return this;
+  }
+
   CefRefPtr<CefDisplayHandler> GetDisplayHandler() override {
     return this;
   }
@@ -78,12 +89,16 @@ class ClientHandler :
     return this;
   }
 
+  CefRefPtr<CefRequestHandler> GetRequestHandler() override {
+    return this;
+  }
+
   // LifeSpanHandler
   bool OnBeforePopup(CefRefPtr<CefBrowser> browser,
                      CefRefPtr<CefFrame> frame,
                      const CefString &target_url,
                      const CefString &target_frame_name,
-                     WindowOpenDisposition target_disposition,
+                     CefLifeSpanHandler::WindowOpenDisposition target_disposition,
                      bool user_gesture,
                      const CefPopupFeatures &popupFeatures,
                      CefWindowInfo &windowInfo,
@@ -117,6 +132,15 @@ class ClientHandler :
                    const CefString &errorText,
                    const CefString &failedUrl) override;
 
+  // CefDownloadHandler methods
+  void OnBeforeDownload(CefRefPtr<CefBrowser> browser,
+                        CefRefPtr<CefDownloadItem> download_item,
+                        const CefString& suggested_name,
+                        CefRefPtr<CefBeforeDownloadCallback> callback) override;
+  void OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
+                         CefRefPtr<CefDownloadItem> download_item,
+                         CefRefPtr<CefDownloadItemCallback> callback) override;
+
   // CefDisplayHandler methods:
   void OnAddressChange(CefRefPtr<CefBrowser> browser,
                        CefRefPtr<CefFrame> frame,
@@ -128,6 +152,19 @@ class ClientHandler :
                      const CefKeyEvent &event,
                      XEvent *os_event,
                      bool *is_keyboard_shortcut) override;
+
+  // CefRequestHandler methods
+  bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
+                      CefRefPtr<CefFrame> frame,
+                      CefRefPtr<CefRequest> request,
+                      bool user_gesture,
+                      bool is_redirect) override;
+  bool OnOpenURLFromTab(
+      CefRefPtr<CefBrowser> browser,
+      CefRefPtr<CefFrame> frame,
+      const CefString &target_url,
+      CefRequestHandler::WindowOpenDisposition target_disposition,
+      bool user_gesture) override;
 
   void OnShowDevTools(CefRefPtr<CefBrowser> browser, const CefPoint &inspect_element_at);
 

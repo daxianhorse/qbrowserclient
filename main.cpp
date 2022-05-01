@@ -2,6 +2,7 @@
 #include <QApplication>
 #include "qbrowserclient.h"
 #include "clienthandler.h"
+#include "qbrowserwindow.h"
 #include "cef_app.h"
 
 int main(int argc, char **argv) {
@@ -32,12 +33,9 @@ int main(int argc, char **argv) {
   CefInitialize(main_args, settings, app.get(), nullptr);
   QApplication a(argc, argv);
 
-  QBrowserClient qw("bilibili.com");
-//  QBrowserClient qw("chrome://version");
+  QBrowserWindow w("http://web.stanford.edu/class/cs224n/readings/cs224n-2019-notes04-dependencyparsing.pdf");
 
   CefRunMessageLoop();
 
   CefShutdown();
-
-//  a.exec();
 }

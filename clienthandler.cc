@@ -169,7 +169,7 @@ bool ClientHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
 void ClientHandler::OnShowDevTools(CefRefPtr<CefBrowser> browser, const CefPoint &inspect_element_at) {
   CefWindowInfo window_info;
   CefRefPtr<CefBrowserHost> host = browser->GetHost();
-  CefRefPtr<CefClient> client = host->GetClient();
+  CefRefPtr<CefClient> client = browser->GetHost()->GetClient();
   CefBrowserSettings browser_settings;
 
   if (!host->HasDevTools()) {
@@ -188,6 +188,46 @@ void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                                          bool canGoBack,
                                          bool canGoForward) {
   CEF_REQUIRE_UI_THREAD();
-
   delegate_->OnSetLoadingState(browser, isLoading, canGoBack, canGoForward);
+}
+bool ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
+                                   CefRefPtr<CefFrame> frame,
+                                   CefRefPtr<CefRequest> request,
+                                   bool user_gesture,
+                                   bool is_redirect) {
+  return false;
+}
+bool ClientHandler::OnOpenURLFromTab(CefRefPtr<CefBrowser> browser,
+                                     CefRefPtr<CefFrame> frame,
+                                     const CefString &target_url,
+                                     CefRequestHandler::WindowOpenDisposition target_disposition,
+                                     bool user_gesture) {
+  if (target_disposition == WOD_NEW_BACKGROUND_TAB ||
+      target_disposition == WOD_NEW_FOREGROUND_TAB) {
+
+    delegate_->OnCreateBrowserByUrl(target_url);
+
+    return true;
+  }
+
+  return false;
+}
+void ClientHandler::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
+                                     CefRefPtr<CefDownloadItem> download_item,
+                                     const CefString &suggested_name,
+                                     CefRefPtr<CefBeforeDownloadCallback> callback) {
+
+  CEF_REQUIRE_UI_THREAD();
+  std::cout << 12341324 << std::endl;
+  callback->Continue("/home/liang/Documents/temp.pdf", false);
+}
+void ClientHandler::OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
+                                      CefRefPtr<CefDownloadItem> download_item,
+                                      CefRefPtr<CefDownloadItemCallback> callback) {
+
+  std::cout << download_item->GetId() << std::endl;
+
+  if(download_item->IsComplete()) {
+    std::cout << 666 << std::endl;
+  }
 }
