@@ -12,13 +12,7 @@
 QBrowserWindow::~QBrowserWindow() {
 }
 
-void QBrowserWindow::keyPressEvent(QKeyEvent *event) {
-  std::cout << event->key() << std::endl;
-}
-
 void QBrowserWindow::resizeEvent(QResizeEvent *ev) {
-  std::cout << 324234 << std::endl;
-
   ::Display *display = cef_get_xdisplay();
   DCHECK(display);
   ::Window window = browser_->GetHost()->GetWindowHandle();

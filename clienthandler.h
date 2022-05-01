@@ -127,7 +127,7 @@ class ClientHandler :
   Delegate *delegate_;
 
 // Include the default reference counting implementation.
- IMPLEMENT_REFCOUNTING(ClientHandler);
+  IMPLEMENT_REFCOUNTING(ClientHandler);
 };
 
 #endif //QBROWSERCLIENT__CLIENTHANDLER_H_

@@ -9,8 +9,6 @@
 #include <iostream>
 
 #include <mutex>
-std::mutex window_lock;
-QBrowserWindow *curr_window;
 
 QBrowserClient::QBrowserClient(const std::string &url) {
   handler_ = new ClientHandler(this);
@@ -19,12 +17,7 @@ QBrowserClient::QBrowserClient(const std::string &url) {
 
   CefWindowInfo window_info;
 
-  window_lock.lock();
-
-  auto *w = new QBrowserWindow;
-  curr_window = w;
-
-  window_info.SetAsChild(w->winId(), {0, 0, 0, 0});
+  OnBeforeBrowserCreate(window_info);
 
 //  settings.multi_threaded_message_loop=true;
   CefBrowserHost::CreateBrowser(window_info,
@@ -33,24 +26,15 @@ QBrowserClient::QBrowserClient(const std::string &url) {
                                 browser_settings,
                                 nullptr,
                                 nullptr);
-
-  std::cout << 324 << std::endl;
 }
 
 void QBrowserClient::OnBrowserCreated(CefRefPtr<CefBrowser> browser) {
   // Add to the list of existing browsers.
 
-//  browser->GetHost()->SetAutoResizeEnabled(true, {1, 1}, {10000, 20000});
-
-//  QWidget *browserWidget = QWidget::createWindowContainer(w);
-
-  std::cout << 12 << std::endl;
   curr_window->setCefBrowser(browser);
   browser_list_[browser->GetIdentifier()] = curr_window;
   curr_window->show();
   window_lock.unlock();
-
-  std::cout << 12 << std::endl;
 }
 
 void QBrowserClient::OnBeforeBrowserCreate(CefWindowInfo &window_info) {

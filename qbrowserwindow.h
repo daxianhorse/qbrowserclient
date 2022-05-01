@@ -13,20 +13,17 @@ class QBrowserWindow : public QQuickWindow {
 
  public:
   friend class QBrowserClient;
-//  explicit QBrowserWindow(QWidget *parent = nullptr);
   ~QBrowserWindow() override;
-
-  void keyPressEvent(QKeyEvent *event) override;
 
   void resizeEvent(QResizeEvent *ev) override;
 
   void closeEvent(QCloseEvent *) override;
 
-  void setCefBrowser(const CefRefPtr<CefBrowser> &browser);
-
  private:
   CefRefPtr<CefBrowser> browser_ = nullptr;
   bool is_closing_ = false;
+
+  void setCefBrowser(const CefRefPtr<CefBrowser> &browser);
 };
 
 #endif //QBROWSERCLIENT__QBROWSERWINDOW_H_

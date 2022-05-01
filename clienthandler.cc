@@ -38,6 +38,10 @@ std::string GetDataURI(const std::string &data, const std::string &mime_type) {
           .ToString();
 }
 
+void SetBrowserZoom(CefRefPtr<CefBrowser> browser, double delta) {
+  browser->GetHost()->SetZoomLevel(browser->GetHost()->GetZoomLevel() + delta);
+}
+
 }  // namespace
 
 bool ClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
@@ -146,9 +150,20 @@ bool ClientHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
                                   bool *is_keyboard_shortcut) {
   if (event.modifiers == EVENTFLAG_CONTROL_DOWN) {
     if (event.type == KEYEVENT_RAWKEYDOWN) {
-      std::cout << event.native_key_code << std::endl;
+      switch (event.native_key_code) {
+        case 20:SetBrowserZoom(browser, -0.5);
+          return true;
+        case 21:SetBrowserZoom(browser, +0.5);
+          return true;
+        default:return false;
+      }
     }
-    return true;
+  } else if (event.type == KEYEVENT_RAWKEYDOWN) {
+    std::cout << event.native_key_code << std::endl;
+      switch (event.native_key_code) {
+        case 71:browser->Reload();
+          return true;
+      }
   }
 
   return false;
@@ -159,7 +174,7 @@ void ClientHandler::OnShowDevTools(CefRefPtr<CefBrowser> browser, const CefPoint
   CefRefPtr<CefClient> client = host->GetClient();
   CefBrowserSettings browser_settings;
 
-  if (!host->HasDevTools())  delegate_->OnBeforeBrowserCreate(window_info);
+  if (!host->HasDevTools()) delegate_->OnBeforeBrowserCreate(window_info);
 
   host->ShowDevTools(window_info, client, browser_settings, inspect_element_at);
 }

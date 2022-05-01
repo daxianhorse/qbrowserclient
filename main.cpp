@@ -17,16 +17,23 @@ int main(int argc, char **argv) {
     return exit_code;
   }
 
+  // Parse command-line arguments for use in this method.
+  CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
+  command_line->InitFromArgv(argc, argv);
+
   // Specify CEF global settings here.
   CefSettings settings;
+
+  CefString(&settings.locale).FromString("zh-CN");
+  CefString(&settings.accept_language_list).FromString("zh-CN");
 
   CefRefPtr<CefApp> app;
 
   CefInitialize(main_args, settings, app.get(), nullptr);
-//  return 0;
   QApplication a(argc, argv);
 
   QBrowserClient qw("bilibili.com");
+//  QBrowserClient qw("chrome://version");
 
   CefRunMessageLoop();
 

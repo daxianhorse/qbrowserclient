@@ -8,9 +8,9 @@
 #include "clienthandler.h"
 #include "qbrowserwindow.h"
 
- class QBrowserClient : public ClientHandler::Delegate {
+class QBrowserClient : public ClientHandler::Delegate {
  public:
-  QBrowserClient(const std::string &url);
+  explicit QBrowserClient(const std::string &url);
 
 //  impl the SimpleHandler::Delegate
   void OnBrowserCreated(CefRefPtr<CefBrowser> browser) override;
@@ -22,9 +22,12 @@
   void OnSetTitle(CefRefPtr<CefBrowser> browser, const CefString &title) override;
 
  private:
-  CefRefPtr<ClientHandler> handler_;
+  ClientHandler *handler_;
 
-  std::map<int, QBrowserWindow*> browser_list_;
+  std::map<int, QBrowserWindow *> browser_list_;
+
+  std::mutex window_lock;
+  QBrowserWindow *curr_window;
 };
 
 #endif //QBROWSERCLIENT__QBROWSERCLIENT_H_
