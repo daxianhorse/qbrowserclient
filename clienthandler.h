@@ -20,9 +20,11 @@ class ClientHandler :
     // Called when the browser has been created.
     virtual void OnBrowserCreated(CefRefPtr<CefBrowser> browser) = 0;
 
-    virtual void OnBeforeBrowserCreate(CefWindowInfo &windowInfo) = 0;
+    virtual void OnBeforeBrowserPopup(CefWindowInfo &windowInfo) = 0;
 
 //    virtual void OnBeforeBrowserPopup(CefWindowInfo &windowInfo) = 0;
+
+    virtual void OnSetAddress(CefRefPtr<CefBrowser> browser, const CefString &url) = 0;
 
     virtual void OnSetTitle(CefRefPtr<CefBrowser> browser, const CefString &title) = 0;
 
@@ -44,10 +46,8 @@ class ClientHandler :
 //    // Auto-resize contents.
 //    virtual void OnAutoResize(const CefSize& new_size) = 0;
 //
-//    // Set the loading state.
-//    virtual void OnSetLoadingState(bool isLoading,
-//                                   bool canGoBack,
-//                                   bool canGoForward) = 0;
+    // Set the loading state.
+    virtual void OnSetLoadingState(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack, bool canGoForward) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -107,13 +107,20 @@ class ClientHandler :
                             EventFlags event_flags) override;
 
   // CefLoadHandler methods:
+  void OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
+                            bool isLoading,
+                            bool canGoBack,
+                            bool canGoForward) override;
   void OnLoadError(CefRefPtr<CefBrowser> browser,
-                           CefRefPtr<CefFrame> frame,
-                           ErrorCode errorCode,
-                           const CefString &errorText,
-                           const CefString &failedUrl) override;
+                   CefRefPtr<CefFrame> frame,
+                   ErrorCode errorCode,
+                   const CefString &errorText,
+                   const CefString &failedUrl) override;
 
   // CefDisplayHandler methods:
+  void OnAddressChange(CefRefPtr<CefBrowser> browser,
+                       CefRefPtr<CefFrame> frame,
+                       const CefString &url) override;
   void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString &title) override;
 
   // CefKeyboardHandler:
@@ -127,7 +134,7 @@ class ClientHandler :
   Delegate *delegate_;
 
 // Include the default reference counting implementation.
-  IMPLEMENT_REFCOUNTING(ClientHandler);
+ IMPLEMENT_REFCOUNTING(ClientHandler);
 };
 
 #endif //QBROWSERCLIENT__CLIENTHANDLER_H_

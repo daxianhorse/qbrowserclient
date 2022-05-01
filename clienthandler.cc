@@ -60,14 +60,12 @@ bool ClientHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser,
   CEF_REQUIRE_UI_THREAD();
 
   if (delegate_) {
-    delegate_->OnBeforeBrowserCreate(windowInfo);
+    delegate_->OnBeforeBrowserPopup(windowInfo);
   }
   return false;
 }
 void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
   CEF_REQUIRE_UI_THREAD();
-
-  std::cout << 3423 << std::endl;
 
   if (delegate_)
     delegate_->OnBrowserCreated(browser);
@@ -160,10 +158,10 @@ bool ClientHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
     }
   } else if (event.type == KEYEVENT_RAWKEYDOWN) {
     std::cout << event.native_key_code << std::endl;
-      switch (event.native_key_code) {
-        case 71:browser->Reload();
-          return true;
-      }
+    switch (event.native_key_code) {
+      case 71:browser->Reload();
+        return true;
+    }
   }
 
   return false;
@@ -174,7 +172,22 @@ void ClientHandler::OnShowDevTools(CefRefPtr<CefBrowser> browser, const CefPoint
   CefRefPtr<CefClient> client = host->GetClient();
   CefBrowserSettings browser_settings;
 
-  if (!host->HasDevTools()) delegate_->OnBeforeBrowserCreate(window_info);
+  if (!host->HasDevTools()) {
+    delegate_->OnBeforeBrowserPopup(window_info);
+  }
 
   host->ShowDevTools(window_info, client, browser_settings, inspect_element_at);
+}
+void ClientHandler::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString &url) {
+  CEF_REQUIRE_UI_THREAD();
+  if (frame->IsMain())
+    delegate_->OnSetAddress(browser, url);
+}
+void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
+                                         bool isLoading,
+                                         bool canGoBack,
+                                         bool canGoForward) {
+  CEF_REQUIRE_UI_THREAD();
+
+  delegate_->OnSetLoadingState(browser, isLoading, canGoBack, canGoForward);
 }

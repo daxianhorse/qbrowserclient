@@ -12,8 +12,17 @@ class QBrowserWindow : public QQuickWindow {
  Q_OBJECT
 
  public:
-  friend class QBrowserClient;
-  ~QBrowserWindow() override;
+  ~QBrowserWindow() = default;
+
+  void setCefBrowser(const CefRefPtr<CefBrowser> &browser);
+
+  void setBrowserUrl(const QString &url);
+
+  void setLoadingState(bool isLoading, bool canGoBack, bool canGoForward);
+
+  void setClosingState(bool isClosing);
+
+  void attachBrowser(const CefString &url);
 
   void resizeEvent(QResizeEvent *ev) override;
 
@@ -21,9 +30,11 @@ class QBrowserWindow : public QQuickWindow {
 
  private:
   CefRefPtr<CefBrowser> browser_ = nullptr;
+  QString browser_url_;
   bool is_closing_ = false;
-
-  void setCefBrowser(const CefRefPtr<CefBrowser> &browser);
+  bool is_loading_ = false;
+  bool can_go_back_ = false;
+  bool can_go_forward_ = false;
 };
 
 #endif //QBROWSERCLIENT__QBROWSERWINDOW_H_

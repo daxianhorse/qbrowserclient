@@ -9,9 +9,6 @@
 #include <X11/Xlib.h>
 #endif
 
-QBrowserWindow::~QBrowserWindow() {
-}
-
 void QBrowserWindow::resizeEvent(QResizeEvent *ev) {
   ::Display *display = cef_get_xdisplay();
   DCHECK(display);
@@ -22,7 +19,6 @@ void QBrowserWindow::resizeEvent(QResizeEvent *ev) {
 }
 
 void QBrowserWindow::setCefBrowser(const CefRefPtr<CefBrowser> &browser) {
-//  this->browser_->Release();
   this->browser_ = browser;
 }
 
@@ -36,4 +32,21 @@ void QBrowserWindow::closeEvent(QCloseEvent *ev) {
     ev->accept();
   }
 }
+void QBrowserWindow::setBrowserUrl(const QString &url) {
+  this->browser_url_ = url;
+  qDebug() << browser_url_;
+}
+void QBrowserWindow::setLoadingState(bool isLoading, bool canGoBack, bool canGoForward) {
+  this->is_loading_ = isLoading;
+  this->can_go_back_ = canGoBack;
+  this->can_go_forward_ = canGoForward;
+  qDebug() << isLoading << ' ' << canGoBack << ' ' << canGoForward;
+}
+void QBrowserWindow::setClosingState(bool isClosing) {
+  this->is_closing_ = isClosing;
+}
+void QBrowserWindow::attachBrowser(const CefString &url) {
+
+}
+
 

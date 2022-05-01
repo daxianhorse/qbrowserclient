@@ -13,19 +13,9 @@
 QBrowserClient::QBrowserClient(const std::string &url) {
   handler_ = new ClientHandler(this);
 
-  CefBrowserSettings browser_settings;
+  auto *target_window = new QBrowserWindow;
 
-  CefWindowInfo window_info;
-
-  OnBeforeBrowserCreate(window_info);
-
-//  settings.multi_threaded_message_loop=true;
-  CefBrowserHost::CreateBrowser(window_info,
-                                handler_,
-                                url,
-                                browser_settings,
-                                nullptr,
-                                nullptr);
+  CreateBrowserByWindow(target_window, "bilibili.com");
 }
 
 void QBrowserClient::OnBrowserCreated(CefRefPtr<CefBrowser> browser) {
@@ -37,7 +27,7 @@ void QBrowserClient::OnBrowserCreated(CefRefPtr<CefBrowser> browser) {
   window_lock.unlock();
 }
 
-void QBrowserClient::OnBeforeBrowserCreate(CefWindowInfo &window_info) {
+void QBrowserClient::OnBeforeBrowserPopup(CefWindowInfo &window_info) {
   window_lock.lock();
 
   auto *w = new QBrowserWindow;
@@ -51,9 +41,31 @@ void QBrowserClient::OnSetTitle(CefRefPtr<CefBrowser> browser, const CefString &
 }
 
 void QBrowserClient::OnBrowserClosed(CefRefPtr<CefBrowser> browser) {
-  browser_list_[browser->GetIdentifier()]->is_closing_ =true;
+  browser_list_[browser->GetIdentifier()]->setClosingState(true);
   browser_list_[browser->GetIdentifier()]->close();
   browser_list_.erase(browser->GetIdentifier());
 
   if (browser_list_.empty()) CefQuitMessageLoop();
+}
+
+void QBrowserClient::OnSetAddress(CefRefPtr<CefBrowser> browser, const CefString &url) {
+  browser_list_[browser->GetIdentifier()]->setBrowserUrl(QString::fromStdString(url.ToString()));
+}
+void QBrowserClient::OnSetLoadingState(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack, bool canGoForward) {
+  browser_list_[browser->GetIdentifier()]->setLoadingState(isLoading, canGoBack, canGoForward);
+}
+void QBrowserClient::CreateBrowserByWindow(QBrowserWindow *target_window, const CefString &url) {
+  window_lock.lock();
+  CefWindowInfo window_info;
+  window_info.SetAsChild(target_window->winId(), {0, 0, 0, 0});
+  curr_window = target_window;
+
+  CefBrowserSettings browser_settings;
+
+  CefBrowserHost::CreateBrowser(window_info,
+                                handler_,
+                                url,
+                                browser_settings,
+                                nullptr,
+                                nullptr);
 }
