@@ -24,11 +24,16 @@ class ClientHandler :
 
     virtual void OnBeforeBrowserPopup(CefWindowInfo &windowInfo) = 0;
 
-//    virtual void OnBeforeBrowserPopup(CefWindowInfo &windowInfo) = 0;
-
     virtual void OnSetAddress(CefRefPtr<CefBrowser> browser, const CefString &url) = 0;
 
     virtual void OnSetTitle(CefRefPtr<CefBrowser> browser, const CefString &title) = 0;
+
+    virtual void OnStartDownload(CefRefPtr<CefDownloadItem> download_item,
+                                 const CefString &suggested_name,
+                                 CefRefPtr<CefBeforeDownloadCallback> callback) = 0;
+
+    virtual void OnUpdateDownloadState(CefRefPtr<CefDownloadItem> download_item,
+                                       CefRefPtr<CefDownloadItemCallback> callback) = 0;
 
 //    // Called when the browser is closing.
 //    virtual void OnBrowserClosing(CefRefPtr<CefBrowser> browser) = 0;
@@ -135,7 +140,7 @@ class ClientHandler :
   // CefDownloadHandler methods
   void OnBeforeDownload(CefRefPtr<CefBrowser> browser,
                         CefRefPtr<CefDownloadItem> download_item,
-                        const CefString& suggested_name,
+                        const CefString &suggested_name,
                         CefRefPtr<CefBeforeDownloadCallback> callback) override;
   void OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
                          CefRefPtr<CefDownloadItem> download_item,

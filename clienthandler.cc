@@ -195,6 +195,7 @@ bool ClientHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
                                    CefRefPtr<CefRequest> request,
                                    bool user_gesture,
                                    bool is_redirect) {
+
   return false;
 }
 bool ClientHandler::OnOpenURLFromTab(CefRefPtr<CefBrowser> browser,
@@ -216,18 +217,14 @@ void ClientHandler::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
                                      CefRefPtr<CefDownloadItem> download_item,
                                      const CefString &suggested_name,
                                      CefRefPtr<CefBeforeDownloadCallback> callback) {
-
   CEF_REQUIRE_UI_THREAD();
-  std::cout << 12341324 << std::endl;
-  callback->Continue("/home/liang/Documents/temp.pdf", false);
+
+  if (delegate_) delegate_->OnStartDownload(download_item, suggested_name, callback);
 }
 void ClientHandler::OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
                                       CefRefPtr<CefDownloadItem> download_item,
                                       CefRefPtr<CefDownloadItemCallback> callback) {
+  CEF_REQUIRE_UI_THREAD();
 
-  std::cout << download_item->GetId() << std::endl;
-
-  if(download_item->IsComplete()) {
-    std::cout << 666 << std::endl;
-  }
+  if (delegate_) delegate_->OnUpdateDownloadState(download_item, callback);
 }
