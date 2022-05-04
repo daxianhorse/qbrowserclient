@@ -7,8 +7,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 
-#set(QT_PATH C:/Qt/6.2.4/msvc2019_64)
-set(QT_PATH /home/liang/Qt/gcc_64)
+set(QT_PATH C:/Qt/6.2.4/msvc2019_64)
+#set(QT_PATH /home/liang/Qt/gcc_64)
 
 set(CMAKE_PREFIX_PATH ${QT_PATH})
 
