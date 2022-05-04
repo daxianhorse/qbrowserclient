@@ -8,7 +8,6 @@
 #include "include/base/cef_callback.h"
 #include "include/cef_app.h"
 #include "include/cef_parser.h"
-#include "include/views/cef_browser_view.h"
 #include "include/views/cef_window.h"
 #include "include/wrapper/cef_closure_task.h"
 #include "include/wrapper/cef_helpers.h"
@@ -72,9 +71,12 @@ void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 }
 bool ClientHandler::DoClose(CefRefPtr<CefBrowser> browser) {
   CEF_REQUIRE_UI_THREAD();
-
+  if (delegate_) {
+    delegate_->OnDoBrowserClose(browser);
+  }
   return false;
 }
+
 void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   CEF_REQUIRE_UI_THREAD();
 
@@ -82,6 +84,7 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     delegate_->OnBrowserClosed(browser);
   }
 }
+
 void ClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
                                         CefRefPtr<CefFrame> frame,
                                         CefRefPtr<CefContextMenuParams> params,
@@ -99,6 +102,7 @@ void ClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
     model->AddItem(CLIENT_ID_INSPECT_ELEMENT, "Inspect Element");
   }
 }
+
 bool ClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
                                          CefRefPtr<CefFrame> frame,
                                          CefRefPtr<CefContextMenuParams> params,
@@ -116,6 +120,7 @@ bool ClientHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
     default:return false;
   }
 }
+
 void ClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefFrame> frame,
                                 CefLoadHandler::ErrorCode errorCode,
@@ -137,15 +142,17 @@ void ClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
 
   frame->LoadURL(GetDataURI(ss.str(), "text/html"));
 }
+
 void ClientHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString &title) {
   if (delegate_) {
     delegate_->OnSetTitle(browser, title);
   }
 }
+
 bool ClientHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
-                                  const CefKeyEvent &event,
-                                  XEvent *os_event,
-                                  bool *is_keyboard_shortcut) {
+                                  const CefKeyEvent& event,
+                                  CefEventHandle os_event,
+                                  bool* is_keyboard_shortcut) {
   if (event.modifiers == EVENTFLAG_CONTROL_DOWN) {
     if (event.type == KEYEVENT_RAWKEYDOWN) {
       switch (event.native_key_code) {
@@ -166,6 +173,7 @@ bool ClientHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
 
   return false;
 }
+
 void ClientHandler::OnShowDevTools(CefRefPtr<CefBrowser> browser, const CefPoint &inspect_element_at) {
   CefWindowInfo window_info;
   CefRefPtr<CefBrowserHost> host = browser->GetHost();
@@ -178,11 +186,13 @@ void ClientHandler::OnShowDevTools(CefRefPtr<CefBrowser> browser, const CefPoint
 
   host->ShowDevTools(window_info, client, browser_settings, inspect_element_at);
 }
+
 void ClientHandler::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString &url) {
   CEF_REQUIRE_UI_THREAD();
   if (frame->IsMain())
     delegate_->OnSetAddress(browser, url);
 }
+
 void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                                          bool isLoading,
                                          bool canGoBack,
@@ -221,6 +231,7 @@ void ClientHandler::OnBeforeDownload(CefRefPtr<CefBrowser> browser,
 
   if (delegate_) delegate_->OnStartDownload(download_item, suggested_name, callback);
 }
+
 void ClientHandler::OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
                                       CefRefPtr<CefDownloadItem> download_item,
                                       CefRefPtr<CefDownloadItemCallback> callback) {

@@ -31,19 +31,17 @@ void BrowserClient::OnBeforeBrowserPopup(CefWindowInfo &window_info) {
   auto *w = new QBrowserWindow;
   curr_window = w;
 
+#ifdef __linux__
   window_info.SetAsChild(w->winId(), {0, 0, 0, 0});
+#endif
+
+#ifdef _WINDOWS
+  window_info.SetAsChild((HWND)w->winId(), {0, 0, 0, 0});
+#endif
 }
 
 void BrowserClient::OnSetTitle(CefRefPtr<CefBrowser> browser, const CefString &title) {
   browser_list_[browser->GetIdentifier()].first->setTitle(QString::fromStdString(title.ToString()));
-}
-
-void BrowserClient::OnBrowserClosed(CefRefPtr<CefBrowser> browser) {
-  browser_list_[browser->GetIdentifier()].first->setClosingState(true);
-  browser_list_[browser->GetIdentifier()].first->close();
-  browser_list_.erase(browser->GetIdentifier());
-
-  if (browser_list_.empty()) CefQuitMessageLoop();
 }
 
 void BrowserClient::OnSetAddress(CefRefPtr<CefBrowser> browser, const CefString &url) {
@@ -62,7 +60,16 @@ void BrowserClient::CreateBrowser(QBrowserWindow *target_window, const CefString
 
   window_lock.lock();
   CefWindowInfo window_info;
+//  window_info.SetAsPopup((HWND)target_window->winId(), "sdf");
+
+#ifdef __linux__
   window_info.SetAsChild(target_window->winId(), {0, 0, 0, 0});
+#endif
+
+#ifdef _WINDOWS
+  window_info.SetAsChild((HWND)target_window->winId(), {0, 0, 0, 0});
+#endif
+
   curr_window = target_window;
 
   CefBrowserSettings browser_settings;
@@ -150,6 +157,18 @@ void BrowserClient::TryCloseBrowser(int browser_id) {
   browser_list_[browser_id].second->GetHost()->TryCloseBrowser();
 }
 
-unsigned long BrowserClient::GetBrowserWindowHandler(int browser_id) {
+CefWindowHandle BrowserClient::GetBrowserWindowHanlder(int browser_id) {
   return browser_list_[browser_id].second->GetHost()->GetWindowHandle();
+}
+
+void BrowserClient::OnDoBrowserClose(CefRefPtr<CefBrowser> browser) {
+  browser_list_[browser->GetIdentifier()].first->setClosingState(true);
+  browser_list_[browser->GetIdentifier()].first->close();
+}
+
+void BrowserClient::OnBrowserClosed(CefRefPtr<CefBrowser> browser) {
+  browser_list_[browser->GetIdentifier()].second = nullptr;
+  browser_list_.erase(browser->GetIdentifier());
+
+  if (browser_list_.empty()) CefQuitMessageLoop();
 }

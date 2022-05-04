@@ -39,6 +39,8 @@ class ClientHandler :
 //    virtual void OnBrowserClosing(CefRefPtr<CefBrowser> browser) = 0;
 //
 //    // Called when the browser has been closed.
+    virtual void OnDoBrowserClose(CefRefPtr<CefBrowser> browser) = 0;
+
     virtual void OnBrowserClosed(CefRefPtr<CefBrowser> browser) = 0;
 
     virtual void OnCreateBrowserByUrl(const CefString &url) = 0;
@@ -153,10 +155,10 @@ class ClientHandler :
   void OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString &title) override;
 
   // CefKeyboardHandler:
-  bool OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
-                     const CefKeyEvent &event,
-                     XEvent *os_event,
-                     bool *is_keyboard_shortcut) override;
+  virtual bool OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
+                             const CefKeyEvent& event,
+                             CefEventHandle os_event,
+                             bool* is_keyboard_shortcut) override;
 
   // CefRequestHandler methods
   bool OnBeforeBrowse(CefRefPtr<CefBrowser> browser,

@@ -18,6 +18,8 @@ class BrowserClient : public ClientHandler::Delegate {
 
   void OnBeforeBrowserPopup(CefWindowInfo &windowInfo) override;
 
+  void OnDoBrowserClose(CefRefPtr<CefBrowser> browser) override;
+
   void OnBrowserClosed(CefRefPtr<CefBrowser> browser) override;
 
   void OnSetAddress(CefRefPtr<CefBrowser> browser, const CefString &url) override;
@@ -37,7 +39,7 @@ class BrowserClient : public ClientHandler::Delegate {
 
   void TryCloseBrowser(int browser_id);
 
-  unsigned long GetBrowserWindowHandler(int browser_id);
+  CefWindowHandle GetBrowserWindowHanlder(int browser_id);
 
   void DoBrowserLoadUrl(int browser_id, const QString &url);
 
