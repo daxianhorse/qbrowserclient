@@ -37,11 +37,13 @@ class BrowserClient : public ClientHandler::Delegate {
 
   void TryCloseBrowser(int browser_id);
 
-  unsigned long GetBrowserWindowHanlder(int browser_id);
+  unsigned long GetBrowserWindowHandler(int browser_id);
 
   void DoBrowserLoadUrl(int browser_id, const QString &url);
 
   void DoBrowserReload(int browser_id);
+
+  void DoBrowserStopLoad(int browser_id);
 
   void DoBrowserGoBack(int browser_id);
 

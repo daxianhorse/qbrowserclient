@@ -1,4 +1,3 @@
-#include <iostream>
 #include <QApplication>
 #include "browserclient.h"
 #include "clienthandler.h"

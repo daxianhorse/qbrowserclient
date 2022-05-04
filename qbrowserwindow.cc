@@ -14,7 +14,7 @@ void QBrowserWindow::resizeEvent(QResizeEvent *ev) {
 #ifdef __linux__
   ::Display *display = cef_get_xdisplay();
   DCHECK(display);
-  ::Window window = BrowserClient::GetInstance()->GetBrowserWindowHanlder(browser_id_);
+  ::Window window = BrowserClient::GetInstance()->GetBrowserWindowHandler(browser_id_);
   XResizeWindow(display, window, this->geometry().width() * 1.25, this->geometry().height() * 1.25);
   XFlush(display);
 #endif
@@ -68,4 +68,8 @@ void QBrowserWindow::doGoBack() {
 
 void QBrowserWindow::doGoForward() {
   if (can_go_forward_) BrowserClient::GetInstance()->DoBrowserGoForward(browser_id_);
+}
+
+void QBrowserWindow::doStopLoad() {
+  if (is_loading_) BrowserClient::GetInstance()->DoBrowserStopLoad(browser_id_);
 }

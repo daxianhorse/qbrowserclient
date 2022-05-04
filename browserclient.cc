@@ -41,7 +41,6 @@ void BrowserClient::OnSetTitle(CefRefPtr<CefBrowser> browser, const CefString &t
 void BrowserClient::OnBrowserClosed(CefRefPtr<CefBrowser> browser) {
   browser_list_[browser->GetIdentifier()].first->setClosingState(true);
   browser_list_[browser->GetIdentifier()].first->close();
-  browser_list_[browser->GetIdentifier()].second = nullptr;
   browser_list_.erase(browser->GetIdentifier());
 
   if (browser_list_.empty()) CefQuitMessageLoop();
@@ -118,6 +117,8 @@ void BrowserClient::OnUpdateDownloadState(CefRefPtr<CefDownloadItem> download_it
   download_widget->setDownloadStatus(
       QDateTime::fromSecsSinceEpoch(download_item->GetStartTime().GetTimeT()),
       download_item->GetPercentComplete());
+
+  if (download_item->IsComplete()) download_item_list_.erase(download_item->GetId());
 }
 
 CefString BrowserClient::GetDownloadPath(const CefString &suggested_name) {
@@ -133,6 +134,10 @@ void BrowserClient::DoBrowserReload(int browser_id) {
   browser_list_[browser_id].second->Reload();
 }
 
+void BrowserClient::DoBrowserStopLoad(int browser_id) {
+  browser_list_[browser_id].second->StopLoad();
+}
+
 void BrowserClient::DoBrowserGoBack(int browser_id) {
   browser_list_[browser_id].second->GoBack();
 }
@@ -145,6 +150,6 @@ void BrowserClient::TryCloseBrowser(int browser_id) {
   browser_list_[browser_id].second->GetHost()->TryCloseBrowser();
 }
 
-unsigned long BrowserClient::GetBrowserWindowHanlder(int browser_id) {
+unsigned long BrowserClient::GetBrowserWindowHandler(int browser_id) {
   return browser_list_[browser_id].second->GetHost()->GetWindowHandle();
 }

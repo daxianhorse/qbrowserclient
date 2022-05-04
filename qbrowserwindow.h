@@ -8,7 +8,7 @@
 #include <QQuickWindow>
 #include "cef_browser.h"
 
-class QBrowserWindow : public QQuickWindow {
+class QBrowserWindow : public QWindow {
  Q_OBJECT
 
  public:
@@ -30,6 +30,8 @@ class QBrowserWindow : public QQuickWindow {
   void doLoadUrl(const QString &url);
 
   void doReload();
+
+  void doStopLoad();
 
   void doGoBack();
 
