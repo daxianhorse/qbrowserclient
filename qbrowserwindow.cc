@@ -15,6 +15,7 @@
 
 void QBrowserWindow::resizeEvent(QResizeEvent *ev) {
 #ifdef __linux__
+  if (browser_id_ <= 0) return;
   ::Display *display = cef_get_xdisplay();
   DCHECK(display);
   ::Window window = BrowserClient::GetInstance()->GetBrowserWindowHanlder(browser_id_);
@@ -22,7 +23,7 @@ void QBrowserWindow::resizeEvent(QResizeEvent *ev) {
   XFlush(display);
 #endif
 #ifdef _WINDOWS
-  if (browser_id_ < 0) return;
+  if (browser_id_ <= 0) return;
    HWND window = BrowserClient::GetInstance()->GetBrowserWindowHanlder(browser_id_);
    ::MoveWindow(window, this->x(), this->y(),
                 this->geometry().width() * 1.25, this->geometry().height() * 1.25, true);
