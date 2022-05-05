@@ -5,7 +5,6 @@
 #include "qbrowserwindow.h"
 #include "cef_app.h"
 
-
 int main(int argc, char **argv) {
   // Provide CEF with command-line arguments.
 
@@ -16,7 +15,6 @@ int main(int argc, char **argv) {
   HINSTANCE h = GetModuleHandle(nullptr);
   CefMainArgs main_args(h);
 #endif
-
 
   // CEF applications have multiple sub-processes (render, GPU, etc) that share
   // the same executable. This function checks the command-line and, if this is
@@ -34,7 +32,6 @@ int main(int argc, char **argv) {
   command_line->InitFromArgv(argc, argv);
 #endif
 #ifdef _WINDOWS
-
 #endif
 
   // Specify CEF global settings here.
